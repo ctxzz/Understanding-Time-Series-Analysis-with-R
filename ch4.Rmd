@@ -1,0 +1,42 @@
+---
+title: "ch4"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 4.2.1 横軸時間のプロット
+
+```{r 4.1, collapse=TRUE}
+# 前処理
+oldpar <- par(no.readonly = TRUE)
+par(mfrow = c(2,2)); par(oma = c(0,0,0,0)); par(mar = c(4,4,2,1))
+
+# (a)ナイル川の年間流量
+plot(Nile, main = "(a)")
+
+# (b)二酸化炭素濃度
+Ryori <- read.csv("CO2.csv")
+y_all <- ts(data = Ryori$CO2, start = c(1987, 1), frequency = 12)
+y <- window(y_all, end = c(2014, 12))
+y_CO2 <- y
+plot(y_CO2, main = "(b)")
+
+# (c)英国の四半期ごとのガス消費量
+plot(UKgas, main = "(c)")
+
+# (d)非線形モデルから生成した人工的なデータ
+load("BenchmarkNonLinearModel.RData")
+y_nonlinear <- ts(y)
+plot(y_nonlinear, main = "(d)")
+
+par(oldpar)
+```
+
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+v
