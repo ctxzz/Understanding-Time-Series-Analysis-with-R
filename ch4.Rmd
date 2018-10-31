@@ -35,8 +35,40 @@ plot(y_nonlinear, main = "(d)")
 par(oldpar)
 ```
 
+## 4.2.2 ヒストグラムと五数要約
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r 4.2, collapse=TRUE}
+
+oldpar <- par(no.readonly = TRUE)
+par(mfrow = c(2,2)); par(oma = c(0,0,0,0)); par(mar = c(4,4,2,1))
+
+# (a)ナイル川
+hist(Nile, main ="(a)", xlab = "データの値")
+summary(Nile)
+
+# (b)二酸化炭素濃度
+hist(y_CO2, main = "(b)", xlab = "データの値")
+summary(y_CO2)
+
+# (c)英国の四半期ごとのガス消費量
+# 対数変換
+UKgas_log <- log(UKgas)
+hist(UKgas_log, main = "(c)", xlab = "データの値")
+summary(UKgas_log)
+
+# (d)非線形モデルから生成した人工的なデータ
+hist(y_nonlinear, main = "(d)", xlab = "データの値")
+summary(y_nonlinear)
+
+par(oldpar)
+
 ```
-v
+
+```{r 4.3, collapse=TRUE}
+# (b)NAの位置を特定
+
+NA.point <- which(is.na(y_CO2))
+
+y_CO2[NA.point] <- (y_CO2[NA.point - 1] + y_CO2[NA.point + 1]) / 2
+
+```
