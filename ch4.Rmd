@@ -72,3 +72,64 @@ NA.point <- which(is.na(y_CO2))
 y_CO2[NA.point] <- (y_CO2[NA.point - 1] + y_CO2[NA.point + 1]) / 2
 
 ```
+
+## 4.2.3 自己相関係数
+
+```{r 4.4, collapse=TRUE}
+# 【自己相関係数】
+
+oldpar <- par(no.readonly = TRUE)
+par(mfrow = c(2,2)); par(oma = c(0,0,0,0)); par(mar = c(4,4,3,1))
+
+# (a)
+acf(Nile, main = "(a)")
+
+# (b)
+acf(y_CO2, main = "(b)")
+
+# (c)
+acf(UKgas_log, main = "(c)")
+
+# (d)
+acf(y_nonlinear, main = "(d)")
+
+par(oldpar)
+
+```
+
+### 周波数領域展開
+
+```{r 4.5, collapse=TRUE}
+# 周波数領域変換
+
+plot.spectrum <- function(dat, lab = "", main ="", y_max = 1, tick = c(8,4), unit = 1) {
+  # データの周波数領域変換
+  dat_FFT <- abs(fft(as.vector(dat)))
+  
+  # グラフ横軸
+  data_len <- length(dat_FFT)
+  freq_tick <- c(data_len , tick ,2)
+  
+  # データのプロット
+  plot(dat_FFT / max(dat_FFT), type = "l", main = main, ylab = "|規格化後の周波数スペクトル|" , ylim = c(0, y_max), xlab = sprintf("周波数[1/%s]", lab), xlim = c(1, data_len / 2), xaxt = "n")
+  axis(side = 1, at = data_len / freq_tick * unit + 1, labels = sprintf("1/%d", freq_tick), cex.axis = 0.7)
+}
+
+oldpar <- par(no.readonly = TRUE)
+par(mfrow = c(2,2)); par(oma = c(0,0,0,0)); par(mar = c(4,4,3,1))
+
+# (a)
+plot.spectrum(Nile, lab = "年", main = "(a)")
+
+# (b)
+plot.spectrum(y_CO2, lab = "月", main = "(b)", tick = c(12, 6))
+
+# (c)
+plot.spectrum(UKgas_log, lab = "月", main = "(c)", tick = c(12, 6), unit = 3)
+
+# (d)
+plot.spectrum(y_nonlinear, lab = "時点", main = "(d)")
+
+par(oldpar)
+```
+
