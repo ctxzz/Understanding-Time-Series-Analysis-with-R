@@ -1,0 +1,58 @@
+---
+title: "ch5"
+author: "ctxzz"
+date: "2/24/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# 状態空間モデル
+
+## 確率的なモデル
+
+```{r 5.1, include=FALSE}
+# ナイル川における年間流量に関するデータを確率的に捉える
+
+# 前処理
+library(dlm)
+
+# ローカルレベルモデルを構築する関数
+build_dlm <- function(par) {
+  dlmModPoly(order = 1, dV = exp(par[1]), dW = exp(par[2]))
+}
+
+# パラメタの最尤推定
+fit_dlm <- dlmMLE(y = Nile, parm = rep(0, 2), build = build_dlm)
+
+# カルマンフィルタ
+dlmFilterd_obj <- dlmFilter(y = Nile, mod = build_dlm(fit_dlm$par))
+
+# 観測地の一期咲き予測分布に関する平均と分散
+m <- dlmFilterd_obj$f
+m_var <- as.numeric(dlmSvd2var(dlmFilterd_obj$U.R, dlmFilterd_obj$D.R))
+
+# 描画データの作成
+
+# 観測方向のグリッド店
+x_mat <- seq(from = min(Nile), to = max(Nile), length.out = 512)
+
+# 時間方向
+y_mat <- time(Nile)
+
+# 確率密度
+z_mat <-t(sapply(seq_along(Nile), function(t) {
+  dnorm(x_mat, mean = m[t], sd = sqrt(m_var[t]))
+}))
+
+# MATLABにデータをエクスポート
+library(R.matlab)
+writeMat("Nile_3Dplot.mat",
+         x = x_mat, y = y_mat, z = z_mat,
+         x1 = Nile, y1 = y_mat, z1 = rep(0, length(Nile)))
+
+
+```
+
